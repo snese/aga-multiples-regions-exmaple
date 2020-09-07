@@ -5,19 +5,13 @@ import ecs = require('@aws-cdk/aws-ecs');
 import ecsPatterns = require('@aws-cdk/aws-ecs-patterns');
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
-
-export interface SampleAgaStackProps extends cdk.StackProps {
-  /**
-   * the load balancer
-   */
-  readonly loadBalancer?: globalaccelerator.LoadBalancer;
-}
-
 export class SampleAgaStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: SampleAgaStackProps) {
+  readonly endpointGroupUS: globalaccelerator.EndpointGroup
+  readonly endpointGroupEU: globalaccelerator.EndpointGroup
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const accelerator = new globalaccelerator.Accelerator(this,"Accelerator")
+    const accelerator = new globalaccelerator.Accelerator(this, 'Accelerator');
     const listener = new globalaccelerator.Listener(this, 'Listener', {
       accelerator,
       portRanges: [
@@ -28,10 +22,16 @@ export class SampleAgaStack extends cdk.Stack {
       ],
     });
 
-    const endpointGroups = new globalaccelerator.EndpointGroup(this,"Group", {listener:listener})
-    if (props?.loadBalancer) {
-      endpointGroups.addLoadBalancer('lb', props.loadBalancer)
-    }    
+    this.endpointGroupEU = new globalaccelerator.EndpointGroup(this, 'EndpointGroupEU', { 
+      listener,
+      region: 'eu-west-1',
+    });
+
+    this.endpointGroupUS = new globalaccelerator.EndpointGroup(this, 'EndpointGroupUS', {
+      listener,
+      region: 'us-west-2',
+    });
+
   }
 }
 
@@ -63,6 +63,11 @@ export class SampleFargateStack extends cdk.Stack {
 
     fartageApp.targetGroup.configureHealthCheck({
       path: "/",
+    })
+
+    new cdk.CfnOutput(this, 'ALBDnsName', { 
+      value: fartageApp.loadBalancer.loadBalancerDnsName,
+      exportName: `ALBDnsName${id}`,
     })
   }
 } 
