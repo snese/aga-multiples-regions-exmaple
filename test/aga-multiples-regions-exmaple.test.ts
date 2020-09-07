@@ -5,7 +5,7 @@ import * as AgaMultiplesRegionsExmaple from '../lib/aga-multiples-regions-exmapl
 test('Empty Stack', () => {
     const app = new cdk.App();
     // WHEN
-    const stack = new AgaMultiplesRegionsExmaple.AgaMultiplesRegionsExmapleStack(app, 'MyTestStack');
+    const stack = new AgaMultiplesRegionsExmaple.SampleAgaStack(app, 'MyTestStack');
     // THEN
     expectCDK(stack).to(matchTemplate({
       "Resources": {}
