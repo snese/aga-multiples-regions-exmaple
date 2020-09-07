@@ -43,7 +43,7 @@ export class SampleFargateStack extends cdk.Stack {
 
     // Create VPC and Fargate Cluster
     // NOTE: Limit AZs to avoid reaching resource quotas
-    const vpc = new ec2.Vpc(this, 'DemoVPC', { maxAzs: 3 });
+    const vpc = new ec2.Vpc(this, 'DemoVPC', { maxAzs: 3, natGateways: 1 });
     const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
     // Instantiate Fargate Service with just cluster and image
@@ -71,3 +71,5 @@ export class SampleFargateStack extends cdk.Stack {
     })
   }
 } 
+
+
