@@ -3,9 +3,37 @@ import globalaccelerator = require('@aws-cdk/aws-globalaccelerator');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import ecsPatterns = require('@aws-cdk/aws-ecs-patterns');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 
+// class endpoints {
+//   id: string;
+//   loadBalancer: elbv2.IApplicationLoadBalancer;
+// }
+
+// export interface SampleAgaStackProps extends cdk.StackProps {
+//   endpoints: endpoints;
+// }
+
+// array
+export interface SampleAgaStackProps extends cdk.StackProps {
+  id: Array<string>
+  loadBalancer: Array<elbv2.ApplicationLoadBalancer>;
+}
+
+// export interface SampleAgaStackProps extends cdk.StackProps {
+//   id: Array<string>
+//   loadBalancer: Array<string>;
+// }
+
+// export interface SampleAgaStackProps extends cdk.StackProps {
+//   id: string;
+//   loadBalancer: elbv2.ApplicationLoadBalancer;
+// }
 
 export class SampleAgaStack extends cdk.Stack {
+  public readonly endpointGroups: globalaccelerator.EndpointGroup;
+
+  // constructor(scope: cdk.Construct, id: string, props?: SampleAgaStackProps) {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -20,15 +48,21 @@ export class SampleAgaStack extends cdk.Stack {
       ],
     });
 
-    const endpointGroups = new globalaccelerator.EndpointGroup(this,"Group", {listener:listener})
-    //endpointGroups.addLoadBalancer()
-    
+    // const endpointGroups = new globalaccelerator.EndpointGroup(this, "Group", {listener:listener})
+    this.endpointGroups = new globalaccelerator.EndpointGroup(this, "Group", {listener:listener})
+
+    // for (let i in props.id){
+
+    //   endpointGroups.addLoadBalancer(props.id[i], props.loadBalancer[i]);
+    // }
   }
 }
 
 export class SampleFargateStack extends cdk.Stack {
+  public readonly name: string;
+  public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
   
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Create VPC and Fargate Cluster
@@ -52,5 +86,8 @@ export class SampleFargateStack extends cdk.Stack {
     fartageApp.targetGroup.configureHealthCheck({
       path: "/",
     })
+
+    this.name = id;
+    this.loadBalancer = fartageApp.loadBalancer;
   }
 } 
