@@ -3,10 +3,18 @@ import globalaccelerator = require('@aws-cdk/aws-globalaccelerator');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import ecsPatterns = require('@aws-cdk/aws-ecs-patterns');
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
+
+export interface SampleAgaStackProps extends cdk.StackProps {
+  /**
+   * the load balancer
+   */
+  readonly loadBalancer?: globalaccelerator.LoadBalancer;
+}
 
 export class SampleAgaStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: SampleAgaStackProps) {
     super(scope, id, props);
 
     const accelerator = new globalaccelerator.Accelerator(this,"Accelerator")
@@ -21,13 +29,15 @@ export class SampleAgaStack extends cdk.Stack {
     });
 
     const endpointGroups = new globalaccelerator.EndpointGroup(this,"Group", {listener:listener})
-    //endpointGroups.addLoadBalancer()
-    
+    if (props?.loadBalancer) {
+      endpointGroups.addLoadBalancer('lb', props.loadBalancer)
+    }    
   }
 }
 
 export class SampleFargateStack extends cdk.Stack {
-  
+  readonly loadBalancer: elbv2.IApplicationLoadBalancer;
+
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -48,6 +58,8 @@ export class SampleFargateStack extends cdk.Stack {
       },
       
     });
+
+    this.loadBalancer = fartageApp.loadBalancer
 
     fartageApp.targetGroup.configureHealthCheck({
       path: "/",
