@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import { SampleFargateStack, SampleAgaStack } from '../lib/aga-multiples-regions-exmaple-stack';
+import { StackOutputs } from '../lib/stackoutput';
 
 const app = new cdk.App();
 
@@ -14,15 +14,25 @@ const aga = new SampleAgaStack(app, 'aga-us', { env: envUS })
 
 // fargate in US
 const fargateUs = new SampleFargateStack(app, 'app-us', { env: envUS });
+
 // fargate in EU
 const fargateEu = new SampleFargateStack(app, 'app-eu', { env: envEU });
-
-const fargateEuAlbDnsName = cdk.Stack.of(aga).node.tryGetContext('eu_endpoint')
 
 // add US ALB to the US endpoint group
 aga.endpointGroupUS.addLoadBalancer('alb-us', fargateUs.loadBalancer);
 
-// add EU ALB to the EU endpoint group
-if(fargateEuAlbDnsName){
-  aga.endpointGroupEU.addEndpoint('alb-eu', fargateEuAlbDnsName);
-}
+// get the fargate EU stack outputs
+const fargateEuOutputs = new StackOutputs(aga, 'FargateEuOutputs', {
+  stack: fargateEu,
+})
+
+// get the fargate EU ALB LoadBalancer ARN
+const fargateEuAlbArn = fargateEuOutputs.getAttString('LoadBalancerArn')
+const fargateEuAlbDnsName = fargateEuOutputs.getAttString('ALBDnsName')
+
+
+aga.endpointGroupEU.addEndpoint('alb-eu', fargateEuAlbArn);
+
+new cdk.CfnOutput(aga, 'AlbDnsNameUS', { value: fargateUs.loadBalancer.loadBalancerDnsName })
+new cdk.CfnOutput(aga, 'AlbDnsNameEU', { value: fargateEuAlbDnsName })
+

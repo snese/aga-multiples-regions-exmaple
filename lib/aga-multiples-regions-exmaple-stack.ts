@@ -67,7 +67,10 @@ export class SampleFargateStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'ALBDnsName', { 
       value: fartageApp.loadBalancer.loadBalancerDnsName,
-      exportName: `ALBDnsName${id}`,
+    })
+
+    new cdk.CfnOutput(this, 'LoadBalancerArn', {
+      value: fartageApp.loadBalancer.loadBalancerArn,
     })
   }
 } 
