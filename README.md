@@ -1,14 +1,8 @@
-# Welcome to your CDK TypeScript project!
+# AGA Multiples Regions Endpoint Example
 
-This is a blank project for TypeScript development with CDK.
+In this example, we'll deploy same AWS Fargate service into different regions (EU and US) and expose the AWS Global Accelerator as the central endpont for the samele services.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+Special thanks for the lib [cdk-remote-stack](https://github.com/pahud/cdk-remote-stack) that archive the cross regional AWS CDK stacks infn exchanges
 
-## Useful commands
-
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+## Architecture
+<TBW>

@@ -31,7 +31,6 @@ export class SampleAgaStack extends cdk.Stack {
       listener,
       region: 'us-west-2',
     });
-
   }
 }
 
@@ -43,20 +42,19 @@ export class SampleFargateStack extends cdk.Stack {
 
     // Create VPC and Fargate Cluster
     // NOTE: Limit AZs to avoid reaching resource quotas
-    const vpc = new ec2.Vpc(this, 'DemoVPC', { maxAzs: 3, natGateways: 1 });
-    const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+    const vpc = new ec2.Vpc(this, 'HcVPC', { maxAzs: 3, natGateways: 1 });
+    const cluster = new ecs.Cluster(this, 'HcCluster', { vpc });
 
     // Instantiate Fargate Service with just cluster and image
-    const fartageApp = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+    const fartageApp = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'HcService', {
       cluster,
       publicLoadBalancer: true,
       memoryLimitMiB: 1024,
       desiredCount: 1,
       cpu: 512,
       taskImageOptions: {
-       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-      },
-      
+       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
+      }
     });
 
     this.loadBalancer = fartageApp.loadBalancer

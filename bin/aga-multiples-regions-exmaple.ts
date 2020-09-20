@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 import { SampleFargateStack, SampleAgaStack } from '../lib/aga-multiples-regions-exmaple-stack';
-import { StackOutputs } from '../lib/stackoutput';
+import { StackOutputs } from 'cdk-remote-stack';
 
 const app = new cdk.App();
 
@@ -35,4 +35,3 @@ aga.endpointGroupEU.addEndpoint('alb-eu', fargateEuAlbArn);
 
 new cdk.CfnOutput(aga, 'AlbDnsNameUS', { value: fargateUs.loadBalancer.loadBalancerDnsName })
 new cdk.CfnOutput(aga, 'AlbDnsNameEU', { value: fargateEuAlbDnsName })
-
