@@ -5,4 +5,4 @@ In this example, we'll deploy the same AWS Fargate service into different region
 Special thanks for the lib [cdk-remote-stack](https://github.com/pahud/cdk-remote-stack) that achieve the cross-regional AWS CDK stacks info exchanges.
 
 ## Architecture
-<TBW>
+![example](https://github.com/snese/aga-multiples-regions-exmaple/blob/master/img/AGA_Example.svg)
